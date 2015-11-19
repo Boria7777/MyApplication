@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_settings"
+        android:orderInCategory="100"
+        android:title="@string/menu_settings"/>
+    <item
+        android:id="@+id/menu_person_info"
+        android:orderInCategory="100"
+        android:title="@string/menu_person_info"/>
+    <item
+        android:id="@+id/menu_funcation_switch"
+        android:orderInCategory="100"
+        android:title="@string/menu_funcation_setting"/>
+</menu>

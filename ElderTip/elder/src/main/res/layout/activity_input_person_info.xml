@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="5dp">
+
+        <TableRow
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_span="2"
+                android:text="用户信息"
+                android:textSize="18sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_username"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sex" />
+
+            <Spinner
+                android:id="@+id/cn_syndu_eldtip_sex"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:entries="@array/Sex" />
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/age" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_age"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/address" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_address"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/person_identity" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_person_identity"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="一键呼叫电话1" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_hot_key_num1"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="一键呼叫电话2" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_hot_key_num2"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="一键呼叫电话3" />
+
+            <EditText
+                android:id="@+id/cn_syndu_eldtip_hot_key_num3"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:singleLine="true"
+                android:text="" />
+        </TableRow>
+        <Button
+            android:id="@+id/cn_syndu_eldtip_btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:onClick="onSubmitClicked"
+            android:text="@string/btnSubmit" />
+    </TableLayout>
+</RelativeLayout>

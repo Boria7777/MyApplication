@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ElderTip.iml" filepath="$PROJECT_DIR$/ElderTip.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/childtip/childtip.iml" filepath="$PROJECT_DIR$/childtip/childtip.iml" />
+      <module fileurl="file://$PROJECT_DIR$/elder/elder.iml" filepath="$PROJECT_DIR$/elder/elder.iml" />
+    </modules>
+  </component>
+</project>
