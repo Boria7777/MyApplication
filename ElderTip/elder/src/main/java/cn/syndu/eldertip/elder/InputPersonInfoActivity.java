@@ -2,14 +2,11 @@ package cn.syndu.eldertip.elder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -113,6 +110,8 @@ public class InputPersonInfoActivity extends Activity {
                 root.addElement("HOT_KEY1").setText(etHotKey1.getText().toString());
                 root.addElement("HOT_KEY2").setText(etHotKey2.getText().toString());
                 root.addElement("HOT_KEY3").setText(etHotKey3.getText().toString());
+
+
                 SharedPreferences myShare = getSharedPreferences(Utility.PERSON_INFO, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = myShare.edit();
                 editor.putString(Utility.PERSON_INFO, doc.asXML());

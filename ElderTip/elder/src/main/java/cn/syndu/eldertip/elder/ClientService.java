@@ -1,26 +1,5 @@
 package cn.syndu.eldertip.elder;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.baidu.location.LocationClientOption.LocationMode;
-
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,6 +13,26 @@ import android.os.IBinder;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ClientService extends Service implements Runnable {
 
@@ -178,6 +177,7 @@ public class ClientService extends Service implements Runnable {
                         msg.what = 0;
                         msg.obj = entity;
                         InboxHandler.sendMessage(msg);
+
                     } else if (action.equals(Protocols.SEND_STEP_INFO_ACTION)) {
                         try {
                             ProtocolEntity entity = new ProtocolEntity();
@@ -280,6 +280,7 @@ public class ClientService extends Service implements Runnable {
             Log.e(Tag, "收到消息" + msg.what);
 
             ProtocolEntity entity = ((ProtocolEntity) msg.obj);
+
             entity.Serial = getPhoneSerail();
             try {
                 switch (entity.Command) {

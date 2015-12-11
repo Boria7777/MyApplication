@@ -111,7 +111,8 @@
         android:paddingBottom="10dip"
         android:paddingLeft="15dip"
         android:paddingRight="15dip"
-        android:paddingTop="10dip" >
+        android:paddingTop="10dip"
+        android:id="@+id/linearLayout">
 
         <LinearLayout
             android:layout_width="0dip"
@@ -361,5 +362,15 @@
                 android:src="@drawable/star_enable" />
         </TableRow>
     </TableLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="曲目欣赏"
+        android:id="@+id/dramabutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout"
+        android:layout_marginTop="27dp" />
 
 </RelativeLayout>
