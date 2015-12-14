@@ -100,7 +100,8 @@
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".com.drama.MainDramaListActivity"></activity>
+        <activity android:name=".com.drama.activity.MainDramaListActivity" />
+        <activity android:name=".com.drama.activity.DramaListActivity"></activity>
     </application>
 
 </manifest>

@@ -1,12 +1,6 @@
 package cn.syndu.eldertip.elder.stepcounter;
 
 
-import java.lang.annotation.ElementType;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -15,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ShareActionProvider;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -33,11 +25,17 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import cn.syndu.eldertip.elder.FunctionSettingActivity;
 import cn.syndu.eldertip.elder.InputPersonInfoActivity;
 import cn.syndu.eldertip.elder.Protocols;
 import cn.syndu.eldertip.elder.R;
 import cn.syndu.eldertip.elder.Utility;
+import cn.syndu.eldertip.elder.com.drama.activity.MainDramaListActivity;
 
 @SuppressLint("HandlerLeak")
 public class StepCounterActivity extends Activity {
@@ -86,6 +84,11 @@ public class StepCounterActivity extends Activity {
 
     private TableRow hide1, hide2;
     private TextView step_counter;
+
+
+
+
+    private Button dramabutton;
 
     Handler handler = new Handler() {
 
@@ -162,11 +165,24 @@ public class StepCounterActivity extends Activity {
 
     };
 
+    private void changeToDrama(){
+        dramabutton = (Button) findViewById(R.id.dramabutton);
+        dramabutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), MainDramaListActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.setContentView(R.layout.main);
+        changeToDrama();
 
         if (SettingsActivity.sharedPreferences == null) {
             SettingsActivity.sharedPreferences = this.getSharedPreferences(
@@ -231,6 +247,7 @@ public class StepCounterActivity extends Activity {
                 sendBroadcast(_intent);
             }
         }
+
     }
 
     @Override
