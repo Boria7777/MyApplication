@@ -5,46 +5,46 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import cn.syndu.eldertip.elder.R;
-import cn.syndu.eldertip.elder.com.drama.domain.MainDramaData;
+import cn.syndu.eldertip.elder.com.drama.domain.DramaData;
 
 /**
- * Created by Boria on 2015/12/11.
+ * Created by Boria on 2015/12/14.
  */
-public class MainDramaAdapter extends BaseAdapter {
-    private List<MainDramaData> mainDramaDatas;
+public class DrameListAdapter extends BaseAdapter {
+
+    private List<DramaData> dramaDatas;
     private LayoutInflater inflater;
     private Context context;
 
-    public List<MainDramaData> getMainDramaDatas() {
-        return mainDramaDatas;
-    }
-
-    public void setMainDramaDatas(List<MainDramaData> mainDramaDatas) {
-        this.mainDramaDatas = mainDramaDatas;
-    }
-
-    public MainDramaAdapter(Context context) {
+    public DrameListAdapter(Context context) {
         this.context = context;
         if (inflater == null) {
             inflater = LayoutInflater.from(context);
         }
     }
 
+    public List<DramaData> getMainDramaDatas() {
+        return dramaDatas;
+    }
+
+    public void setMainDramaDatas(List<DramaData> dramaDatas) {
+        this.dramaDatas = dramaDatas;
+    }
+
     @Override
     public int getCount() {
-
-        return mainDramaDatas.size();
+        return dramaDatas.size();
     }
 
     @Override
     public Object getItem(int position) {
-
-        return mainDramaDatas.get(position);
+        return dramaDatas.get(position);
     }
 
     @Override
@@ -56,20 +56,21 @@ public class MainDramaAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = 	inflater.inflate(R.layout.drama_type_item, null);
+            convertView = 	inflater.inflate(R.layout.drama_drama_item, null);
             holder = new ViewHolder();
-            holder.mainTypeName = (TextView) convertView.findViewById(R.id.typeName);
+            holder.dramaName = (TextView) convertView.findViewById(R.id.dramaName);
+            holder.dramaImage = (ImageView) convertView.findViewById(R.id.dramaImage);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
-        }
-        final MainDramaData oneData = mainDramaDatas.get(position);
-        holder.mainTypeName.setText(oneData.getTypeName());
+    }
 
+        holder.dramaName.setText(dramaDatas.get(position).getDramaName());
         return convertView;
     }
 
     public final class ViewHolder {
-        public TextView mainTypeName;
+        public TextView dramaName;
+        public ImageView dramaImage;
     }
 }

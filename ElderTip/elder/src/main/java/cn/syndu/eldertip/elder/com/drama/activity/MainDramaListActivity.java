@@ -1,6 +1,7 @@
 package cn.syndu.eldertip.elder.com.drama.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +46,12 @@ public class MainDramaListActivity extends Activity {
 
                 Log.i("hehe","这是第"+position+"个");
                 Log.i("hehe", "这是" + mainDataList.get(position).getTypeName());
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), DramaListActivity.class);
+                Bundle mBundle = new Bundle();
+                mBundle.putString("Data", mainDataList.get(position).getTypeName());//压入数据
+                intent.putExtras(mBundle);
+                startActivity(intent);
             }
         });
 

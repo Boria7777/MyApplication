@@ -65,12 +65,12 @@
             android:id="@id/btn_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dip"
-            android:layout_marginRight="15dip"
+            android:layout_marginLeft="0dip"
+            android:layout_marginRight="0dip"
             android:layout_marginTop="5dip" >
 
             <Button
-                android:id="@id/start"
+                android:id="@+id/start"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dip"
@@ -84,7 +84,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@id/stop"
+                android:id="@+id/stop"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dip"
@@ -365,12 +365,17 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="曲目欣赏"
         android:id="@+id/dramabutton"
+        android:background="@drawable/btn_bg"
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/linearLayout"
         android:layout_alignStart="@+id/linearLayout"
-        android:layout_marginTop="27dp" />
+        android:layout_marginTop="27dp"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:padding="5dp"/>
 
 </RelativeLayout>
