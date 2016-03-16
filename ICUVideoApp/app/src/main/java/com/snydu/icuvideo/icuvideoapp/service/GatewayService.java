@@ -3,16 +3,26 @@ package com.snydu.icuvideo.icuvideoapp.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Button;
+
+import com.snydu.icuvideo.icuvideoapp.event.GetXmlEvent;
+import com.snydu.icuvideo.icuvideoapp.event.SendXmlEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GatewayService extends Service implements Runnable {
     private boolean isThreadRunning = false;
@@ -23,12 +33,14 @@ public class GatewayService extends Service implements Runnable {
     private InetSocketAddress isa = null;
     private Thread thread = null;
     private String content = "";
-    public static final String R_COMMON_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><MEETING><PLATFORM>2</PLATFORM><USER>1</USER><PASSWORD>123456</PASSWORD></MEETING>";
     private Button loginButton;
     private String Tag = this.getClass().getSimpleName();
     private boolean isReConnceting = false;
     private static Context context = null;
     private static SocketReceiverHandler CmdHandler = null;
+    private int cmdCode = 0;
+    private String InfoXml = null;
+    private long isOverTime = System.currentTimeMillis();
 
     public GatewayService() {
     }
@@ -39,7 +51,18 @@ public class GatewayService extends Service implements Runnable {
         context = GatewayService.this;
         CmdHandler = new SocketReceiverHandler();
         reConnect();
+        EventBus.getDefault().register(this);
         super.onCreate();
+    }
+
+    @Subscribe
+    public void onEventMainThread(SendXmlEvent event) throws IOException {
+        String msg = "onEventMainThread收到了消息：" + event.getCmdCode() + event.getSendinfoXml();
+        cmdCode = event.getCmdCode();
+        InfoXml = event.getSendinfoXml();
+        Log.e(TAG, msg);
+        sendData(cmdCode, InfoXml);
+
     }
 
     @Override
@@ -48,24 +71,23 @@ public class GatewayService extends Service implements Runnable {
         return null;
     }
 
+    private String a = null;
+    private String b = null;
+    private String c = null;
     Runnable connectSocketRunnable = new Runnable() {
 
         @Override
         public void run() {
-
             do {
+                Log.e(Tag, "准备socket 重连！");
                 if (!isThreadRunning) {
-                    Log.e(Tag, "socket开始重连！");
-                    Log.e(Tag, "socket开始重连！");
-                    Log.e(Tag, "socket开始重连！");
-                    Log.e(Tag, "socket开始重连！");
                     try {
                         socket = new Socket();
                         isa = new InetSocketAddress("192.168.1.210", 20000);
                         socket.connect(isa, 30000);
                         out = new BufferedOutputStream(socket.getOutputStream());
                         in = new BufferedInputStream(socket.getInputStream());
-                        sendData(0x0001, R_COMMON_XML);
+
                         try {
                             if (null != thread && thread.isAlive()) {
                                 Log.e(Tag, " 中断 Thread 接收线程！");
@@ -77,14 +99,36 @@ public class GatewayService extends Service implements Runnable {
                             }
                         } catch (Exception ex) {
                             Log.d(Tag, "老线程关闭失败：" + thread.getName());
+                            c = ex.toString();
                         }
+                        isReConnceting = false;
+//                        Message obj = CmdHandler.obtainMessage();
+//                        obj.what = Order.DEVICE_LOGIN;
+//                        CmdHandler.sendMessage(obj);
+
+                        EventBus.getDefault().post(new SendXmlEvent("", 0x0000));
+                        SendAliveHandler.postDelayed(AliveRunnable, aliveSplit);
+                        OverTimeHandler.postDelayed(OverTimeRunnable, maxTimeOut);
 
                         break;
-
                     } catch (Exception ex) {
                         Log.i(Tag, Thread.currentThread().getName() + " InitSocket error " + ex.toString());
                         Log.i(Tag, "Socket 连接失败，稍候重试！");
-
+                    }
+                } else {
+                    try {
+                        if ((thread != null) && (thread.isAlive())) {
+                            thread.interrupt();
+                        }
+                    } catch (Exception e) {
+                        Log.e(Tag, e == null ? "" : e.toString());
+                    }
+                    Log.e(Tag, "isThreadRunning=" + isThreadRunning + " 稍后重连！");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
                 }
             } while (true);
@@ -97,12 +141,14 @@ public class GatewayService extends Service implements Runnable {
         int hasRec = 0;
         int isRead = 0;
         do {
+            Log.e("GetWay lock   ", "锁定");
+            lock.lock();
             byte[] buffer = new byte[length - hasRec];
             isRead = in.read(buffer);
             if (isRead != -1) {
                 System.arraycopy(buffer, 0, result, hasRec, isRead);
                 hasRec += isRead;
-                Log.e(Tag, "Socket read" + isRead);
+                Log.e(Tag, "Socket read   " + isRead);
                 if (isRead == 0)
                     Thread.sleep(100);
             } else {
@@ -110,7 +156,8 @@ public class GatewayService extends Service implements Runnable {
                     return null;
                 }
             }
-
+            lock.unlock();
+            Log.e("GetWay lock   ", "解锁");
         } while (hasRec < length);
         return result;
     }
@@ -147,6 +194,8 @@ public class GatewayService extends Service implements Runnable {
     }
 
     public void sendData(int order, String body) throws IOException {
+
+
         Log.e(Tag, "发送命令：" + order);
         byte[] cmd = int2Byte(order);
         byte[] _bBody = body.getBytes("utf-8");
@@ -161,13 +210,18 @@ public class GatewayService extends Service implements Runnable {
 
         out.flush();
 
+
     }
 
     public void reConnect() {
 
         Object obj = new Object();
+        OverTimeHandler.removeCallbacks(OverTimeRunnable);
+        SendAliveHandler.removeCallbacks(AliveRunnable);
         if (!isReConnceting) {
             Log.e(Tag, "开始重新连接网关！");
+            lock = null;
+//            sendBroadcast(new Intent(BroadCast.GATEWAY_DISCONNECTED_ACTION));
             isReConnceting = true;
             try {
                 in.close();
@@ -192,7 +246,6 @@ public class GatewayService extends Service implements Runnable {
             } catch (Exception e) {
 
             }
-            new Thread(AliveRunnable).start();
             new Thread(connectSocketRunnable).start();
 
         } else {
@@ -201,70 +254,82 @@ public class GatewayService extends Service implements Runnable {
 
     }
 
+    private String XmlMessage = null;
+    private int msgCode = 0;
 
     private class SocketReceiverHandler extends android.os.Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.e(Tag, "收到命令" + msg.what);
-            Log.e(Tag, "收到数据" + msg.obj);
+            msgCode = msg.what;//命令code
+            XmlMessage = (String) msg.obj;//xml内容
+            Log.e(Tag, "收到命令" + msgCode);
+            Log.e(Tag, "收到数据" + XmlMessage);
 
-//            Document document = DocumentHelper.createDocument();
-//            //添加节点信息
-//            Element rootElement = document.addElement("modules");
-//            //这里可以继续添加子节点，也可以指定内容
-//            rootElement.setText("这个是module标签的文本信息");
-//            Element element = rootElement.addElement("module");
-//
-//            Element nameElement = element.addElement("name");
-//            Element valueElement = element.addElement("value");
-//            Element descriptionElement = element.addElement("description");
-//
-//            nameElement.setText("名称");
-//            nameElement.addAttribute("language", "java");//为节点添加属性值
-//
-//            valueElement.setText("值");
-//            valueElement.addAttribute("language", "c#");
-//
-//            descriptionElement.setText("描述");
-//            descriptionElement.addAttribute("language", "sql server");
-//
-//            System.out.println(document.asXML());
+//            if (msg.what >= 0) {
+//                Toast.makeText(getApplicationContext(), XmlMessage, Toast.LENGTH_SHORT).show();
+//            }
+
+            if (msgCode != 0x8000) {
+                EventBus.getDefault().post(new GetXmlEvent(XmlMessage, msgCode));
+            }
+//           EventBus.getDefault().post(new GetXmlEvent(XmlMessage,msgCode));
 
         }
     }
 
-    Runnable AliveRunnable = new Runnable() {
+
+    private static final long maxTimeOut = 60000;
+    private Handler OverTimeHandler = new Handler();
+    private Runnable OverTimeRunnable = new Runnable() {
 
         @Override
         public void run() {
-            do {
-                try {
-//                 sendData(0x0000,"" );
-//                Message aliveMsg = CmdHandler.obtainMessage();
-//                aliveMsg.what = 0x0000;
-                    thread.sleep(10000);
-//                CmdHandler.sendMessage(aliveMsg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }while (true);
+            Log.d("Gateway OverTime", "检查超时:" + (System.currentTimeMillis() - isOverTime));
+            if (System.currentTimeMillis() - isOverTime > maxTimeOut) {
+                Log.e("Gateway OverTime", "网关服务器连接超时！重新连接！");
+                isThreadRunning = false;
+                reConnect();
+            } else {
+                isOverTime = System.currentTimeMillis();
+                OverTimeHandler.removeCallbacks(this);
+                OverTimeHandler.postDelayed(this, maxTimeOut);
+            }
 
         }
     };
 
 
+    public final int aliveSplit = 10000;
+    Handler SendAliveHandler = new Handler();
+    Runnable AliveRunnable = new Runnable() {
 
+        @Override
+        public void run() {
+            try {
+                EventBus.getDefault().post(new SendXmlEvent("", 0x0000));
+                SendAliveHandler.postDelayed(this, aliveSplit);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    private byte[] b4 = null;
+    private byte[] _data = null;
+
+
+    private ReentrantLock lock = null;
 
     @Override
     public void run() {
-        Log.i(Tag, Thread.currentThread().getName() + " 接收网关消息");
+        // TODO Auto-generated method stub
 
+        lock = new ReentrantLock();
         while (!Thread.interrupted()) {
-            isThreadRunning = true;
             Log.i(Tag, Thread.currentThread().getName() + " 接收网关消息");
+            isThreadRunning = true;
             try {
-                Message msg = CmdHandler.obtainMessage();
+
                 byte[] b4 = recBytes(4);
                 // Thread.sleep(100);
                 if (b4 == null) {
@@ -272,16 +337,21 @@ public class GatewayService extends Service implements Runnable {
                 }
                 int length = byte2Int(b4);
                 Log.d(Tag, "Get protocol length:" + length);
+
+                Message msg = CmdHandler.obtainMessage();
+                Log.i(Tag, "收到帧时间" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis())) + "收到帧长度：" + length);
+
                 byte[] _data = recBytes(length);
 
                 // get cmd
                 byte[] _bCmd = new byte[4];
                 System.arraycopy(_data, 0, _bCmd, 0, 4);
                 int _iCmd = byte2Int(_bCmd);
-                Log.d(Tag, "Get cmd :" + _iCmd);
                 msg.what = _iCmd;
+                Log.d(Tag, "Get cmd :" + _iCmd);
+
                 if (length > 4) {
-                    // 协议长度大于4，说明有内容。
+                    // 协议长度大于40，说明有内容。
                     byte[] _content = new byte[length - 4];
                     Log.d(Tag, "get protocol's content:" + _content.length);
                     System.arraycopy(_data, 4, _content, 0, _content.length);
@@ -290,20 +360,21 @@ public class GatewayService extends Service implements Runnable {
                 }
                 CmdHandler.sendMessage(msg);
                 Thread.sleep(200);
-
+                isOverTime = System.currentTimeMillis();
+                Log.d("GatewayService OverTime", "重置超时时间" + isOverTime);
             } catch (Exception ex) {
                 Log.e(Tag, "监听接收时出错：" + (String) (null == ex ? "" : ex.getMessage()));
+                isThreadRunning = false;
                 reConnect();
                 break;
             }
-
+//            finally {
+//                lock.unlock();//释放锁
+//            }
         }
-
         isThreadRunning = false;
         Log.e(Tag, "接收线程中断！");
     }
-
-
 
 
 }
