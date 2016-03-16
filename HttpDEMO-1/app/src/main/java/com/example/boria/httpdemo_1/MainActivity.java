@@ -6,17 +6,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import android.os.Handler;
+import android.widget.ImageView;
+
+import java.util.logging.LogRecord;
+
 
 public class MainActivity extends ActionBarActivity {
 
     private WebView webView;
+    private Handler handler = new Handler();
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        webView = findViewById(R.id.webView);
+//        webView = (WebView) findViewById(R.id.webView);
+        imageView = (ImageView) findViewById(R.id.image);
+        new HttpThread("https://www.baidu.com/img/bdlogo.png",imageView, handler).start();
+
+
     }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

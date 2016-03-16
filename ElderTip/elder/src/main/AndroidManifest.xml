@@ -101,7 +101,8 @@
             android:process=":remote" />
 
         <activity android:name=".com.drama.activity.MainDramaListActivity" />
-        <activity android:name=".com.drama.activity.DramaListActivity"></activity>
+        <activity android:name=".com.drama.activity.DramaListActivity"/>
+        <activity android:name=".com.drama.activity.VideoPlayerActivity"/>
     </application>
 
 </manifest>

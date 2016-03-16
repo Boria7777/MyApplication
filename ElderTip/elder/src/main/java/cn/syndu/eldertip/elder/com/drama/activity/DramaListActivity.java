@@ -1,7 +1,10 @@
 package cn.syndu.eldertip.elder.com.drama.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,6 +32,17 @@ public class DramaListActivity extends Activity {
         DrameListAdapter drameListAdapter = new DrameListAdapter(getApplicationContext());
         drameListAdapter.setMainDramaDatas(dramaDatas);
         dramaListView.setAdapter(drameListAdapter);
+        dramaListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), VideoPlayerActivity.class);
+                Bundle mBundle = new Bundle();
+                mBundle.putString("Data", dramaDatas.get(position).getDramaUrl());//压入数据
+                intent.putExtras(mBundle);
+                startActivity(intent);
+            }
+        });
     }
 
 //    5229

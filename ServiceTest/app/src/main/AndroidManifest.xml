@@ -16,6 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".TestService1">
+            <intent-filter>
+                <action android:name="com.example.boria.servicetest.TEST_SERVICE1"/>
+            </intent-filter>
+        </service>
+
+        <service android:name=".TestService2" android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.boria.servicetest.TEST_SERVICE2"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

@@ -10,8 +10,10 @@ import android.widget.Button;
 import android.widget.SeekBar;
 
 import java.io.File;
+import java.io.IOException;
 
 import cn.syndu.eldertip.elder.R;
+import cn.syndu.eldertip.elder.com.drama.untils.FileHelper;
 import cn.syndu.eldertip.elder.com.drama.untils.Player;
 
 /**
@@ -23,6 +25,7 @@ public class VideoPlayerActivity extends Activity {
     private SeekBar skbProgress;
     private Player player;
     private int state= 1;
+    private FileHelper helper;
 
     /** Called when the activity is first created. */
     @Override
@@ -30,6 +33,7 @@ public class VideoPlayerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.videoplayer);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        helper = new FileHelper(getApplicationContext());
         surfaceView = (SurfaceView) this.findViewById(R.id.surfaceView1);
         surfaceView.setOnClickListener(new ClickEvent());
 
@@ -48,6 +52,8 @@ public class VideoPlayerActivity extends Activity {
         skbProgress = (SeekBar) this.findViewById(R.id.skbProgress);
         skbProgress.setOnSeekBarChangeListener(new SeekBarChangeEvent());
         player = new Player(surfaceView, skbProgress);
+
+
 
     }
 
@@ -68,9 +74,25 @@ public class VideoPlayerActivity extends Activity {
                     VideoPlace = local;
                 }else {
                     System.out.println("播放网络视频");
-                    VideoPlace = "http://192.168.1.100:8080/NoteDemo/video/123123.3gp";
+                    VideoPlace = "http://192.168.1.104:8080/NoteDemo/video/123123.3gp";
+                    helper = new FileHelper(getApplicationContext());
+                    try {
+                        helper.createSDFile("123123.3gp").getAbsolutePath();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }	new Thread(
+                            new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    // TODO Auto-generated method stub
+                                    helper.writeSDFile("123123.3gp", "http://192.168.1.104:8080/NoteDemo/video/123123.3gp");
+                                }
+                            }
+                    ).start();
                 }
                 player.playUrl(VideoPlace);
+
 
             } else if (arg0 == btnStop) {
                 player.stop();

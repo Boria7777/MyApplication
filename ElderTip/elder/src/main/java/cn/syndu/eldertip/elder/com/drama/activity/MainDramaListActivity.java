@@ -52,6 +52,7 @@ public class MainDramaListActivity extends Activity {
                 mBundle.putString("Data", mainDataList.get(position).getTypeName());//压入数据
                 intent.putExtras(mBundle);
                 startActivity(intent);
+
             }
         });
 
